@@ -1,7 +1,5 @@
 -- Table: vehicles
-
--- Drop the table if it exists (optional)
-DROP TABLE IF EXISTS vehicles;
+-- This tables stores vehicle data for the simulation. There's no need to run this file, it's just for reference
 
 -- Create the table
 CREATE TABLE IF NOT EXISTS vehicles (
