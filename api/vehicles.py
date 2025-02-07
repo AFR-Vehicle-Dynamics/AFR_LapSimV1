@@ -66,12 +66,6 @@ class Vehicle(db.Model):
 with app.app_context():
     db.create_all()
 
-@app.route('/api/hello', methods=['GET'])
-def hello_world():
-    return jsonify({
-        "message": "Hello World!"
-    })
-
 @app.route('/api/add_vehicle', methods=['POST'])
 def add_vehicle():
     if request.method == 'POST':
