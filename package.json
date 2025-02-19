@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "next": "15.1.4",
+    "nuqs": "^2.4.0",
     "papaparse": "^5.5.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
