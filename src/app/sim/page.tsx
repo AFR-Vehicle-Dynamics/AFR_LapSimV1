@@ -1,8 +1,9 @@
 'use client';
 import React, { useState } from 'react'
-import VehicleSelectSidebar from '../components/SimControlPanel/SimControlPanel'
-import DataSelectSidebar from '../components/DataSelectSidebar/DataSelectSidebar'
+import SimControlPanel from '../components/SimComponents/SimControlPanel/SimControlPanel'
 import Navbar from '../components/Navbar/Navbar'
+import GraphDisplay from '../components/SimComponents/GraphDisplay/GraphDisplay';
+import SimDataDisplayPanel from '../components/SimComponents/SimDataDisplayPanel/SimDataDisplayPanel';
 
 const SimPage = () => {
   const [selectedVehicle, setSelectedVehicle] = useState<string | number | null>(null);
@@ -12,14 +13,15 @@ const SimPage = () => {
 
   return (
     <>
-        <div className='fixed right-0 flex h-screen w-3/4 flex-row font-mono' data-theme="luxury">
-            {/* <DataSelectSidebar/> */}
-            <div className='w-full h-full flex items-center justify-center rounded-3xl bg-gray-500'
-            style={{backgroundColor: '#110e12'}}>
-                <p>Configure control panel</p>
+        <div className='fixed right-0 flex h-screen w-full flex-grow flex-row font-mono' data-theme="luxury">
+          <Navbar/>
+            <div className="flex flex-col w-1/3">
+              <SimDataDisplayPanel onSelect={handleVehicleSelect}/>
+              <SimControlPanel onSelect={handleVehicleSelect}/>
             </div>
-            <VehicleSelectSidebar onSelect={handleVehicleSelect}/>
-            <Navbar/>
+            <div className="flex-grow">
+              <GraphDisplay/>
+            </div>
         </div>
         
     </>

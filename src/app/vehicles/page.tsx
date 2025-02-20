@@ -48,7 +48,7 @@ const VehiclesPage: React.FC<VehicleData> = () => {
           className={`flex-grow w-full h-full flex items-center justify-center rounded-3xl`}
           style={{ backgroundColor: '#110e12' }}
         >
-            {selectedVehicle === '+' ? (
+            {selectedVehicle === -1 ? (
               <div className="flex flex-col items-center">
                 <p>Add a new vehicle</p>
                 <CSVImporterBox />
