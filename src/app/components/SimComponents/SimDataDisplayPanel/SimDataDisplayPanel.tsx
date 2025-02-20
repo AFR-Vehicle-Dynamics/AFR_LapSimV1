@@ -19,7 +19,6 @@ const SimDataDisplayPanel: React.FC<SimDataDisplayPanelProps> = ({ onSelect }) =
         return current.toLocaleString();
     };
 
-    
 
     useEffect(() => {
         setTime(now());
