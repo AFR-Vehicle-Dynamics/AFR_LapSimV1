@@ -1,8 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { GiRaceCar } from "react-icons/gi";
-import { MdMenu } from "react-icons/md";
-import { IoMdHome, IoIosSpeedometer } from "react-icons/io";
+import { IoIosSpeedometer } from "react-icons/io";
 import { FaRoad } from "react-icons/fa";
 import Image from 'next/image';
 import AFRLogo from '../../assets/afrlogo.png';
