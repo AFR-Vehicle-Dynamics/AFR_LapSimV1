@@ -140,7 +140,62 @@ def add_vehicle():
     
 @app.route('/api/edit_vehicle', methods=['PUT'])
 def edit_vehicle():
-    pass
+    if request.method == 'PUT':
+        data = request.get_json()
+        vehicle_id = data.get('id')
+        vehicle = Vehicle.query.filter_by(id=vehicle_id).first()
+        if vehicle:
+            vehicle.vehicle_name = data.get('vehicle_name', vehicle.vehicle_name)
+            vehicle.vehicle_type = data.get('vehicle_type', vehicle.vehicle_type)
+            vehicle.total_mass = data.get('total_mass', vehicle.total_mass)
+            vehicle.fm_distribution = data.get('fm_distribution', vehicle.fm_distribution)
+            vehicle.wheelbase = data.get('wheelbase', vehicle.wheelbase)
+            vehicle.steering_rack_ratio = data.get('steering_rack_ratio', vehicle.steering_rack_ratio)
+            vehicle.lift_coef = data.get('lift_coef', vehicle.lift_coef)
+            vehicle.drag_coef = data.get('drag_coef', vehicle.drag_coef)
+            vehicle.cl_scale_mult = data.get('cl_scale_mult', vehicle.cl_scale_mult)
+            vehicle.cd_scale_mult = data.get('cd_scale_mult', vehicle.cd_scale_mult)
+            vehicle.fa_distribution = data.get('fa_distribution', vehicle.fa_distribution)
+            vehicle.frontal_area = data.get('frontal_area', vehicle.frontal_area)
+            vehicle.air_density = data.get('air_density', vehicle.air_density)
+            vehicle.disc_outer_dia = data.get('disc_outer_dia', vehicle.disc_outer_dia)
+            vehicle.pad_height = data.get('pad_height', vehicle.pad_height)
+            vehicle.pad_f_coef = data.get('pad_f_coef', vehicle.pad_f_coef)
+            vehicle.caliper_num_pistons = data.get('caliper_num_pistons', vehicle.caliper_num_pistons)
+            vehicle.caliper_piston_dia = data.get('caliper_piston_dia', vehicle.caliper_piston_dia)
+            vehicle.master_cylinder_dia = data.get('master_cylinder_dia', vehicle.master_cylinder_dia)
+            vehicle.pedal_ratio = data.get('pedal_ratio', vehicle.pedal_ratio)
+            vehicle.grip_factor_mult = data.get('grip_factor_mult', vehicle.grip_factor_mult)
+            vehicle.tyre_r = data.get('tyre_r', vehicle.tyre_r)
+            vehicle.rolling_resistance = data.get('rolling_resistance', vehicle.rolling_resistance)
+            vehicle.long_friction_coef = data.get('long_friction_coef', vehicle.long_friction_coef)
+            vehicle.long_friction_load_rating = data.get('long_friction_load_rating', vehicle.long_friction_load_rating)
+            vehicle.long_friction_sensitivity = data.get('long_friction_sensitivity', vehicle.long_friction_sensitivity)
+            vehicle.lat_friction_coef = data.get('lat_friction_coef', vehicle.lat_friction_coef)
+            vehicle.lat_friction_load_rating = data.get('lat_friction_load_rating', vehicle.lat_friction_load_rating)
+            vehicle.lat_friction_sensitivity = data.get('lat_friction_sensitivity', vehicle.lat_friction_sensitivity)
+            vehicle.front_cornering_stiffness = data.get('front_cornering_stiffness', vehicle.front_cornering_stiffness)
+            vehicle.rear_cornering_stiffness = data.get('rear_cornering_stiffness', vehicle.rear_cornering_stiffness)
+            vehicle.power_factor_mult = data.get('power_factor_mult', vehicle.power_factor_mult)
+            vehicle.thermal_eff = data.get('thermal_eff', vehicle.thermal_eff)
+            vehicle.fuel_lower_heating_value = data.get('fuel_lower_heating_value', vehicle.fuel_lower_heating_value)
+            vehicle.drive_type = data.get('drive_type', vehicle.drive_type)
+            vehicle.gear_shift_time = data.get('gear_shift_time', vehicle.gear_shift_time)
+            vehicle.primary_gear_eff = data.get('primary_gear_eff', vehicle.primary_gear_eff)
+            vehicle.final_gear_eff = data.get('final_gear_eff', vehicle.final_gear_eff)
+            vehicle.gearbox_eff = data.get('gearbox_eff', vehicle.gearbox_eff)
+            vehicle.primary_gear_reduc = data.get('primary_gear_reduc', vehicle.primary_gear_reduc)
+            vehicle.final_gear_reduc = data.get('final_gear_reduc', vehicle.final_gear_reduc)
+            vehicle.first_gear_ratio = data.get('first_gear_ratio', vehicle.first_gear_ratio)
+            vehicle.second_gear_ratio = data.get('second_gear_ratio', vehicle.second_gear_ratio)
+            vehicle.third_gear_ratio = data.get('third_gear_ratio', vehicle.third_gear_ratio)
+            vehicle.fourth_gear_ratio = data.get('fourth_gear_ratio', vehicle.fourth_gear_ratio)
+            vehicle.fifth_gear_ratio = data.get('fifth_gear_ratio', vehicle.fifth_gear_ratio)
+            vehicle.sixth_gear_ratio = data.get('sixth_gear_ratio', vehicle.sixth_gear_ratio)
+            db.session.commit()
+            return jsonify({"message": "Vehicle updated successfully!"}), 200
+        else:
+            return jsonify({"message": "Vehicle not found!"}), 404
 
 
 @app.route('/api/delete_vehicle', methods=['POST'])
@@ -231,6 +286,28 @@ def add_track():
         db.session.add(new_track)
         db.session.commit()
         return jsonify({"message": "Track added successfully!"}), 201
+
+@app.route('/api/edit_track', methods=['PUT'])
+def edit_track():
+    if request.method == 'PUT':
+        data = request.get_json()
+        track_id = data.get('id')
+        track = Track.query.filter_by(id=track_id).first()
+        if track:
+            track.track_name = data.get('track_name', track.track_name)
+            track.format = data.get('format', track.format)
+            track.country = data.get('country', track.country)
+            track.city = data.get('city', track.city)
+            track.track_type = data.get('track_type', track.track_type)
+            track.config = data.get('config', track.config)
+            track.direction = data.get('direction', track.direction)
+            track.mirror = data.get('mirror', track.mirror)
+            track.export_freq = data.get('export_freq', track.export_freq)
+            track.csv_name = data.get('csv_name', track.csv_name)
+            db.session.commit()
+            return jsonify({"message": "Track updated successfully!"}), 200
+        else:
+            return jsonify({"message": "Track not found!"}), 404
         
 @app.route('/api/get_track', methods=['GET'])
 def get_track():
