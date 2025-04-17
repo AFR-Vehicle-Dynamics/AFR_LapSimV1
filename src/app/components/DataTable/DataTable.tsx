@@ -1,5 +1,7 @@
 'use client';
 import React, { useState } from 'react';
+import { useSearchParams } from 'next/navigation';
+import CSVImporterBox from '../CSVImporterBox/CSVImporterBox';
 
 interface TracksData {
   track_name: string;
@@ -18,6 +20,7 @@ const DataTable = ({ objects }: { objects: any[] }) => {
   const [editable, setEditable] = React.useState(false);
   const [trackData, setTrackData] = useState<TracksData | null>(null);
   const [vehicleData, setVehicleData] = useState<VehicleData | null>(null);
+  const [selectedTrack, setSelectedTrack] = useState<string | number | null>(null);
 
   const toggleEditable = () => {
     setEditable(!editable);
@@ -53,24 +56,45 @@ const DataTable = ({ objects }: { objects: any[] }) => {
 
   return (
     <div>
-      <button className="btn" onClick={toggleEditable}>
+      {/* <button className="btn" onClick={toggleEditable}>
         {editable ? 'View' : 'Edit'}
-      </button>
-      <div className="overflow-x-auto w-64 h-11 bg-sky-50">
-        {objects.map((row, rowIndex) => (
-            <div key={rowIndex} className="flex">
-            console.log(Object.values(row));
-            {Object.values(row).map((value, colIndex) => (
-              <div key={colIndex} className="p-2 border">
-              {editable ? (
-                <input className="input input-bordered" defaultValue={value as string} />
-              ) : (
-                value as React.ReactNode
-              )}
-              </div>
-            ))}
+      </button> */}
+      <div className="flex-grow w-full h-full flex items-center justify-center rounded-3xl">
+        {selectedTrack === -1 ? (
+            <div className="flex flex-col items-center">
+              <p>Add a new track</p>
+              <CSVImporterBox />
             </div>
-        ))}
+          ) : selectedTrack ? (
+            <div className="flex flex-col items-center">
+              <button className="btn btn-active btn-ghost">Edit</button>
+              <p>Selected Track: {trackData?.track_name}</p>
+              <table className="table-auto mt-4">
+              <thead>
+                <tr>
+                <th className="px-4 py-2">Attribute</th>
+                <th className="px-4 py-2">Value</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                <td className="border px-4 py-2">Name</td>
+                <td className="border px-4 py-2">{trackData?.track_name}</td>
+                </tr>
+                <tr>
+                <td className="border px-4 py-2">Country</td>
+                <td className="border px-4 py-2">{trackData?.country}</td>
+                </tr>
+                <tr>
+                <td className="border px-4 py-2">City</td>
+                <td className="border px-4 py-2">{trackData?.city}</td>
+                </tr>
+              </tbody>
+              </table>
+            </div>
+          ) : (
+            <p>Select a Track</p>
+          )}
       </div>
     </div>
   );

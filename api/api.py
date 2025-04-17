@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from dotenv import load_dotenv
 from flask_sqlalchemy import SQLAlchemy
 import os
+import matlab.engine
 
 app = Flask(__name__)
 load_dotenv()
@@ -208,6 +209,7 @@ def get_vehicle():
         vehicle_id = request.args.get('vehicle_id')
         vehicle = Vehicle.query.filter_by(id=vehicle_id).first()
         return jsonify({
+            "id": vehicle.id,
             "vehicle_name": vehicle.vehicle_name,
             "vehicle_type": vehicle.vehicle_type,
             "total_mass": vehicle.total_mass,
@@ -315,6 +317,7 @@ def get_track():
         track_id = request.args.get('track_id')
         track = Track.query.filter_by(id=track_id).first()
         return jsonify({
+            "id": track.id,
             "track_name": track.track_name,
             "format": track.format,
             "country": track.country,
@@ -327,6 +330,19 @@ def get_track():
             "csv_name": track.csv_name
         })
 
+@app.route('/api/delete_track', methods=['POST'])
+def delete_track():
+    if request.method == 'DELETE':
+        data = request.get_json()
+        track_id = data.get('id')
+        track = Track.query.filter_by(id=track_id).first()
+        if track:
+            db.session.delete(track)
+            db.session.commit()
+            return jsonify({"message": "Track deleted successfully!"}), 200
+        else:
+            return jsonify({"message": "Track not found!"}), 404
+
 @app.route('/api/get_all_tracks', methods=['GET'])
 def get_all_tracks():
     tracks = Track.query.all()
@@ -334,6 +350,12 @@ def get_all_tracks():
     for track in tracks:
         track_list.append({"id": track.id, "track_name": track.track_name})
     return jsonify(track_list)
+
+
+@app.route("/matlab/")
+def add_in_matlab(a, b):
+    result = eng.plus(float(a), float(b))
+    return jsonify({'result': result})
     
 
 if __name__ == "__main__":
