@@ -12,6 +12,9 @@ app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv('PGURL')
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
+# Start matlab engine
+eng = matlab.engine.start_matlab()
+
 # This looks huge but it's just the table schema
 class Vehicle(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -352,10 +355,16 @@ def get_all_tracks():
     return jsonify(track_list)
 
 
-@app.route("/matlab/")
-def add_in_matlab(a, b):
-    result = eng.plus(float(a), float(b))
-    return jsonify({'result': result})
+@app.route("/api/matlab/")
+def add_in_matlab():
+    a = request.args.get('a', type=float)
+    b = request.args.get('b', type=float)
+
+    if a is None or b is None:
+        return jsonify({'error': 'Missing or invalid parameters'}), 400
+
+    result = eng.plus(a, b)
+    return result
     
 
 if __name__ == "__main__":
