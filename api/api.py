@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 from flask_sqlalchemy import SQLAlchemy
 import os
 import matlab.engine
+import subprocess
 
 app = Flask(__name__)
 load_dotenv()
@@ -355,7 +356,7 @@ def get_all_tracks():
     return jsonify(track_list)
 
 
-@app.route("/api/matlab/")
+@app.route("/api/matlab", methods=['GET'])
 def add_in_matlab():
     a = request.args.get('a', type=float)
     b = request.args.get('b', type=float)
@@ -364,7 +365,7 @@ def add_in_matlab():
         return jsonify({'error': 'Missing or invalid parameters'}), 400
 
     result = eng.plus(a, b)
-    return result
+    return str(result)
     
 
 if __name__ == "__main__":

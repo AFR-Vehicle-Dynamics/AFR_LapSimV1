@@ -22,7 +22,7 @@ const TracksPage: React.FC<TracksData> = () => {
   };
 
   const getTrackData = async (id: number) => {
-    const res = await fetch(`http://localhost:3000/api/get_track?track_id={id}`.replace('{id}', id.toString()), {
+    const res = await fetch(`/api/get_track?track_id={id}`.replace('{id}', id.toString()), {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

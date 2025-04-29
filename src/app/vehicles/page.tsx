@@ -22,7 +22,7 @@ const VehiclesPage: React.FC<VehicleData> = () => {
   };
 
   const getVehicleData = async (vehicle_id: number) => {
-    const res = await fetch(`http://localhost:3000/api/get_vehicle?vehicle_id={vehicle_id}`.replace('{vehicle_id}', vehicle_id.toString()), {
+    const res = await fetch(`/api/get_vehicle?vehicle_id={vehicle_id}`.replace('{vehicle_id}', vehicle_id.toString()), {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

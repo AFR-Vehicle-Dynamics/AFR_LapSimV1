@@ -7,7 +7,7 @@ import SimDataDisplayPanel from '../components/SimComponents/SimDataDisplayPanel
 
 
 const runOpenVehicle = async (a: string, b: string) => {
-  const res = await fetch(`http://localhost:3000/api/matlab?a=${a}&b=${b}`, {
+  const res = await fetch(`/api/matlab?a=${a}&b=${b}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -26,15 +26,25 @@ const SimPage = () => {
 
 
   // update testnum fetch
-  useEffect(() => { 
+  useEffect(() => {
+    const runOpenVehicle = async (a: string, b: string) => {
+      const response = await fetch(`/api/matlab?a=${a}&b=${b}`);
+      const data = await response.json();
+      console.log("result: ", data);
+      return data;
+    };
+  
     const fetchTestNum = async () => {
       try {
         const result = await runOpenVehicle("1", "2");
+        
         setTestNum(result);
       } catch (error) {
         console.error("Failed to fetch test number:", error);
       }
     };
+  
+    fetchTestNum();
   }, []);
 
   return (
