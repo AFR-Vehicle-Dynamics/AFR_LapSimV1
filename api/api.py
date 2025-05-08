@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file
 from dotenv import load_dotenv
 from flask_sqlalchemy import SQLAlchemy
 import os
@@ -15,6 +15,7 @@ db = SQLAlchemy(app)
 
 # Start matlab engine
 eng = matlab.engine.start_matlab()
+eng.cd(r'api/matlab') # cd into the matlab folder so engine can access .m files
 
 # This looks huge but it's just the table schema
 class Vehicle(db.Model):
@@ -84,6 +85,20 @@ class Track(db.Model):
 # Commit the table to the database
 with app.app_context():
     db.create_all()
+
+# ---------------------------------------
+# Generic function to run matlab scripts
+def run_matlab_script(path):
+    command = f'matlab -batch {path}'
+    subprocess.run(command, shell=True)
+
+# Convert matlab.double to Python list.
+def convert_matlab(obj):
+    
+    if isinstance(obj, matlab.double):
+        return [float(item) for sublist in obj for item in sublist]
+    return obj
+
 
 @app.route('/api/add_vehicle', methods=['POST'])
 def add_vehicle():
@@ -364,8 +379,48 @@ def add_in_matlab():
     if a is None or b is None:
         return jsonify({'error': 'Missing or invalid parameters'}), 400
 
-    result = eng.plus(a, b)
+    # result = eng.plus(a, b)
+    # return str(result)
+    eng.cd(r'api')
+    print("functions in path:", eng.which('your_file'))
+    result = eng.your_file(nargout=1)
     return str(result)
+
+# @app.route("/api/runOpenVEHICLE", methods=['GET'])
+# def run_open_vehicle():
+#     print("here1")
+#     vehname = request.args.get('vehname', type=str)
+#     print(f'vehname: {vehname}\n')
+#     print("start running..\n")
+#     # run_matlab_script("./matlab/OpenVEHICLE")
+#     print("done running..\n")
+#     return send_file('./matlab/{vehname}.png', mimetype='image/png')
+
+@app.route("/api/runOpenVEHICLE", methods=['GET'])
+def run_open_vehicle():
+    # print("here1")
+    # vehname = request.args.get('vehname', type=str)
+    # print(f'vehname: {vehname}\n')
+    print("start running..\n")
+    # # run_matlab_script("./matlab/OpenVEHICLE")
+    # print("done running..\n")
+    vehname = eng.OpenVEHICLE(nargout=1)
+    print(vehname)
+    data = eng.load(vehname+'.mat')
+    print(data['gear'])
+    return jsonify({
+        'en_speed_curve': convert_matlab(data['en_speed_curve']), # engine curves
+        'factor_power': convert_matlab(data['factor_power']),
+        'en_power_curve': convert_matlab(data['en_power_curve']),
+        'vehicle_speed': convert_matlab(data['vehicle_speed']), # gearing
+        'engine_speed': convert_matlab(data['engine_speed']),
+        'gear': convert_matlab(data['gear']),
+        'fx_engine': convert_matlab(data['fx_engine']),
+        'fx_tyre': convert_matlab(data['fx_tyre']),
+        'fx_aero': convert_matlab(data['fx_aero']),
+        'fx_roll': convert_matlab(data['fx_roll'])
+    })
+    # return str(vehname)
     
 
 if __name__ == "__main__":
