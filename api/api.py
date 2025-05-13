@@ -408,7 +408,7 @@ def run_open_vehicle():
     print(vehname)
     data = eng.load(vehname+'.mat')
     print(data['gear'])
-    return jsonify({
+    return jsonify({ # for each, convert to a list of floats first
         'en_speed_curve': convert_matlab(data['en_speed_curve']), # engine curves
         'factor_power': convert_matlab(data['factor_power']),
         'en_power_curve': convert_matlab(data['en_power_curve']),
@@ -420,7 +420,6 @@ def run_open_vehicle():
         'fx_aero': convert_matlab(data['fx_aero']),
         'fx_roll': convert_matlab(data['fx_roll'])
     })
-    # return str(vehname)
     
 
 if __name__ == "__main__":

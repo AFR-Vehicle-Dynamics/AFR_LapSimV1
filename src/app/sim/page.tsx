@@ -6,46 +6,12 @@ import GraphDisplay from '../components/SimComponents/GraphDisplay/GraphDisplay'
 import SimDataDisplayPanel from '../components/SimComponents/SimDataDisplayPanel/SimDataDisplayPanel';
 
 
-const runOpenVehicle = async (a: string, b: string) => {
-  const res = await fetch(`/api/matlab?a=${a}&b=${b}`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
-  const data = await res.json();
-  return data;
-}
-
 const SimPage = () => {
   const [selectedVehicle, setSelectedVehicle] = useState<string | number | null>(null);
-  const [testNum, setTestNum] = useState<string | number | null>(0);
+  const [graphData, setData] = useState<JSON | null>(null);
   const handleVehicleSelect = (vehicle_id: number) => {
     setSelectedVehicle(vehicle_id);
   };
-
-
-  // update testnum fetch
-  useEffect(() => {
-    const runOpenVehicle = async (a: string, b: string) => {
-      const response = await fetch(`/api/matlab?a=${a}&b=${b}`);
-      const data = await response.json();
-      console.log("result: ", data);
-      return data;
-    };
-  
-    const fetchTestNum = async () => {
-      try {
-        const result = await runOpenVehicle("1", "2");
-        
-        setTestNum(result);
-      } catch (error) {
-        console.error("Failed to fetch test number:", error);
-      }
-    };
-  
-    fetchTestNum();
-  }, []);
 
   return (
     <>
@@ -54,10 +20,9 @@ const SimPage = () => {
             <div className="flex flex-col w-1/3">
               <SimDataDisplayPanel onSelect={handleVehicleSelect}/>
               <SimControlPanel onSelect={handleVehicleSelect}/>
-              <p>MEOWEM {testNum}</p>
             </div>
             <div className="flex-grow">
-              <GraphDisplay/>
+              <GraphDisplay />
             </div>
         </div>
         

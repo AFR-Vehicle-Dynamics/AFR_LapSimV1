@@ -9,20 +9,21 @@ interface SimControlPanelProps {
 const SimControlPanel: React.FC<SimControlPanelProps> = ({ onSelect }) => {
   const [vehicles, setVehicles] = useState<{ id: number, vehicle_name: string }[]>([]);
   const [vehicle, setVehicle] = useQueryState('vehicle', parseAsInteger);
-  const [track, setTrack] = useQueryState('track');
+  const [tracks, setTracks] = useState<{ id: number, track_name: string}[]>([]);
+  const [track, setTrack] = useQueryState('track', parseAsInteger);
 
   const handleVehicleSelect = (vehicle_id: number) => {
     setVehicle(vehicle_id);
     console.log(vehicle);
   };
 
-  const handleTrackSelect = (track: string) => {
-    setTrack(track);
+  const handleTrackSelect = (track_id: number) => {
+    setTrack(track_id);
     console.log(track);
   };
 
   const getAllVehicleData = async () => {
-    const res = await fetch('http://localhost:3000/api/get_all_vehicles', {
+    const res = await fetch('/api/get_all_vehicles', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -34,9 +35,26 @@ const SimControlPanel: React.FC<SimControlPanelProps> = ({ onSelect }) => {
     return data;
   };
 
+  const getAllTrackData = async () => {
+    const res = await fetch('/api/get_all_tracks', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    const data = await res.json();
+    setTracks(data);
+    console.log(tracks);
+    return data;
+  };
+
   useEffect(() => {
-    getAllVehicleData().then((data) => {
-      console.log(data);
+    getAllVehicleData().then((v_data) => {
+      console.log("vehicle data: ", v_data);
+    });
+
+    getAllTrackData().then((t_data) => {
+      console.log("track data: ", t_data);
     });
   }, []);
 
@@ -69,16 +87,18 @@ const SimControlPanel: React.FC<SimControlPanelProps> = ({ onSelect }) => {
               </ul>
             </div>
             <div className="dropdown dropdown-right">
-                <div tabIndex={0} role="button" className="btn btn-outline mt-4 w-64 m-1">{track ? track : "Select Track"}</div>
+                <div tabIndex={0} role="button" className="btn btn-outline mt-4 w-64 m-1">{track ? tracks.find(t => t.id === track)?.track_name : "Select Track"}</div>
                 <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
-                <div className="mt-4 text-center">
+                {tracks.map((track, index) => (
+                <div key={index} className="mt-4 text-center">
                   <button
                   className="btn font-mono btn-outline hover:text-blue-500 w-64"
-                  onClick={() => handleTrackSelect("Paul Ricard")}
+                  onClick={() => handleTrackSelect(track.id)}
                   >
-                  Paul Ricard
+                  {track.track_name}
                   </button>
                 </div>
+                ))}
               </ul>
             </div>
         </div>

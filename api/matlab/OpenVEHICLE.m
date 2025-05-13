@@ -41,7 +41,7 @@ function result = OpenVEHICLE()
 
     %% Vehicle file selection
 
-    filename = 'OpenVEHICLE Jinx.xlsx' ;
+    filename = 'Jinx.xlsx' ;
 
     %% Reading vehicle file
 
