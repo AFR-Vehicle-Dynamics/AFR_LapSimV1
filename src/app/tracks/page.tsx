@@ -5,16 +5,36 @@ import Navbar from '../components/Navbar/Navbar'
 import CSVImporterBox from '../components/CSVImporterBox/CSVImporterBox';
 import TrackEditModal from '../components/TrackEditModal/TrackEditModal';
 
-interface TracksData {
-  track_name: string;
-  id: number;
-  country: string;
-  city: string;
-}
+type TrackData = Record<string, any>;
 
-const TracksPage: React.FC<TracksData> = () => {
+// Helper function to format field names (snake_case to Title Case)
+const formatFieldName = (key: string): string => {
+  return key
+    .split('_')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+};
+
+// Helper function to format field values
+const formatFieldValue = (value: any): string => {
+  if (value === null || value === undefined) {
+    return 'N/A';
+  }
+  if (typeof value === 'boolean') {
+    return value ? 'Yes' : 'No';
+  }
+  if (typeof value === 'number') {
+    return value.toString();
+  }
+  if (typeof value === 'object') {
+    return JSON.stringify(value);
+  }
+  return String(value);
+};
+
+const TracksPage: React.FC = () => {
   const [selectedTrack, setSelectedTrack] = useState<string | number | null>(null);
-  const [trackData, setTrackData] = useState<TracksData | null>(null);
+  const [trackData, setTrackData] = useState<TrackData | null>(null);
   const [modalOpen, setIsModalOpen] = useState(false);
 
   const handleTrackSelect = (id: number) => {
@@ -55,17 +75,7 @@ const TracksPage: React.FC<TracksData> = () => {
           className={`flex-grow w-full h-full flex items-center justify-center rounded-3xl`}
           style={{ backgroundColor: '#110e12' }}
         >
-            {/* Open the modal using document.getElementById('ID').showModal() method */}
-            {selectedTrack && selectedTrack !== -1 && (
-              <button className="btn" onClick={() => {
-              const modal = document.getElementById('edit_modal');
-              if (modal) {
-                (modal as HTMLDialogElement).showModal();
-              }
-              }}> Edit </button>
-            )}
-
-            <TrackEditModal isOpen={modalOpen} onClose={() => setIsModalOpen(false)} initTrackData={trackData} />
+            <TrackEditModal isOpen={modalOpen} onClose={() => setIsModalOpen(false)} initTrackData={trackData as Record<string, any> | null} />
             
             {/* <DataTable objects={trackData ? [trackData] : []} /> */}
             {selectedTrack === -1 ? (
@@ -75,29 +85,43 @@ const TracksPage: React.FC<TracksData> = () => {
               </div>
             ) : selectedTrack ? (
               <div className="flex flex-col items-center">
-                <p>Selected Track: {trackData?.track_name}</p>
-                <table className="table-auto mt-4">
-                <thead>
-                  <tr>
-                  <th className="px-4 py-2">Attribute</th>
-                  <th className="px-4 py-2">Value</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                  <td className="border px-4 py-2">Name</td>
-                  <td className="border px-4 py-2">{trackData?.track_name}</td>
-                  </tr>
-                  <tr>
-                  <td className="border px-4 py-2">Country</td>
-                  <td className="border px-4 py-2">{trackData?.country}</td>
-                  </tr>
-                  <tr>
-                  <td className="border px-4 py-2">City</td>
-                  <td className="border px-4 py-2">{trackData?.city}</td>
-                  </tr>
-                </tbody>
-                </table>
+                <div className="flex items-center gap-4 mb-4">
+                  <p>{trackData?.track_name || 'N/A'}</p>
+                  {selectedTrack !== -1 && (
+                    <button className="btn" onClick={() => {
+                      const modal = document.getElementById('edit_modal');
+                      if (modal) {
+                        (modal as HTMLDialogElement).showModal();
+                      }
+                    }}> Edit </button>
+                  )}
+                </div>
+                <div className="overflow-auto max-h-[80vh] w-full max-w-4xl">
+                  <table className="table-auto mt-4 w-full">
+                    <thead>
+                      <tr>
+                        <th className="px-4 py-2 sticky top-0 bg-gray-800">Attribute</th>
+                        <th className="px-4 py-2 sticky top-0 bg-gray-800">Value</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {trackData && Object.entries(trackData)
+                        .filter(([key]) => key !== 'id' && key != "track_name")
+                        .sort(([a], [b]) => {
+                          // Sort: track_name first, then alphabetically
+                          if (a === 'track_name') return -1;
+                          if (b === 'track_name') return 1;
+                          return a.localeCompare(b);
+                        })
+                        .map(([key, value]) => (
+                          <tr key={key}>
+                            <td className="border px-4 py-2">{formatFieldName(key)}</td>
+                            <td className="border px-4 py-2">{formatFieldValue(value)}</td>
+                          </tr>
+                        ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             ) : (
               <p>Select a Track</p>

@@ -5,14 +5,34 @@ import Navbar from '../components/Navbar/Navbar'
 import CSVImporterBox from '../components/CSVImporterBox/CSVImporterBox';
 import VehicleEditModal from '../components/VehicleEditModal/VehicleEditModal';
 
-interface VehicleData {
-  id: number;
-  vehicle_name: string;
-  vehicle_type: string;
-  total_mass: number;
-}
+type VehicleData = Record<string, any>;
 
-const VehiclesPage: React.FC<VehicleData> = () => {
+// Helper function to format field names (snake_case to Title Case)
+const formatFieldName = (key: string): string => {
+  return key
+    .split('_')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+};
+
+// Helper function to format field values
+const formatFieldValue = (value: any): string => {
+  if (value === null || value === undefined) {
+    return 'N/A';
+  }
+  if (typeof value === 'boolean') {
+    return value ? 'Yes' : 'No';
+  }
+  if (typeof value === 'number') {
+    return value.toString();
+  }
+  if (typeof value === 'object') {
+    return JSON.stringify(value);
+  }
+  return String(value);
+};
+
+const VehiclesPage: React.FC = () => {
   const [selectedVehicle, setSelectedVehicle] = useState<string | number | null>(null);
   const [modalOpen, setIsModalOpen] = useState(false);
   const [vehicleData, setVehicleData] = useState<VehicleData | null>(null);
@@ -54,16 +74,7 @@ const VehiclesPage: React.FC<VehicleData> = () => {
           className={`flex-grow w-full h-full flex items-center justify-center rounded-3xl`}
           style={{ backgroundColor: '#110e12' }}
         >
-          {/* Open the modal using document.getElementById('ID').showModal() method */}
-          {selectedVehicle && selectedVehicle !== -1 && (
-          <button className="btn" onClick={() => {
-              const modal = document.getElementById('edit_modal');
-              if (modal) {
-                (modal as HTMLDialogElement).showModal();
-              }
-          }}> Edit </button>)}
-
-            <VehicleEditModal isOpen={modalOpen} onClose={() => setIsModalOpen(false)} initVehicleData={vehicleData} />
+            <VehicleEditModal isOpen={modalOpen} onClose={() => setIsModalOpen(false)} initVehicleData={vehicleData as Record<string, any> | null} />
 
             {selectedVehicle === -1 ? (
               <div className="flex flex-col items-center">
@@ -72,29 +83,43 @@ const VehiclesPage: React.FC<VehicleData> = () => {
               </div>
             ) : selectedVehicle ? (
               <div className="flex flex-col items-center">
-                <p>Selected Vehicle: {vehicleData?.vehicle_name}</p>
-                <table className="table-auto mt-4">
-                <thead>
-                  <tr>
-                  <th className="px-4 py-2">Attribute</th>
-                  <th className="px-4 py-2">Value</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                  <td className="border px-4 py-2">Name</td>
-                  <td className="border px-4 py-2">{vehicleData?.vehicle_name}</td>
-                  </tr>
-                  <tr>
-                  <td className="border px-4 py-2">Type</td>
-                  <td className="border px-4 py-2">{vehicleData?.vehicle_type}</td>
-                  </tr>
-                  <tr>
-                  <td className="border px-4 py-2">Total Mass</td>
-                  <td className="border px-4 py-2">{vehicleData?.total_mass}</td>
-                  </tr>
-                </tbody>
-                </table>
+                <div className="flex items-center gap-4 mb-4">
+                  <p>{vehicleData?.vehicle_name || 'N/A'}</p>
+                  {selectedVehicle !== -1 && (
+                    <button className="btn" onClick={() => {
+                      const modal = document.getElementById('edit_modal');
+                      if (modal) {
+                        (modal as HTMLDialogElement).showModal();
+                      }
+                    }}> Edit </button>
+                  )}
+                </div>
+                <div className="overflow-auto max-h-[80vh] w-full max-w-4xl">
+                  <table className="table-auto mt-4 w-full">
+                    <thead>
+                      <tr>
+                        <th className="px-4 py-2 sticky top-0 bg-gray-800">Attribute</th>
+                        <th className="px-4 py-2 sticky top-0 bg-gray-800">Value</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {vehicleData && Object.entries(vehicleData)
+                        .filter(([key]) => key !== 'id' && key != "vehicle_name")
+                        .sort(([a], [b]) => {
+                          // Sort: vehicle_name first, then alphabetically
+                          if (a === 'vehicle_name') return -1;
+                          if (b === 'vehicle_name') return 1;
+                          return a.localeCompare(b);
+                        })
+                        .map(([key, value]) => (
+                          <tr key={key}>
+                            <td className="border px-4 py-2">{formatFieldName(key)}</td>
+                            <td className="border px-4 py-2">{formatFieldValue(value)}</td>
+                          </tr>
+                        ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             ) : (
               <p>Select a Vehicle</p>
