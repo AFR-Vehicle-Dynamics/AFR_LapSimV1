@@ -5,7 +5,7 @@ import Navbar from '../components/Navbar/Navbar'
 import CSVImporterBox from '../components/CSVImporterBox/CSVImporterBox';
 import TrackEditModal from '../components/TrackEditModal/TrackEditModal';
 
-type TrackData = Record<string, any>;
+type TrackData = Record<string, unknown>;
 
 // Helper function to format field names (snake_case to Title Case)
 const formatFieldName = (key: string): string => {
@@ -16,7 +16,7 @@ const formatFieldName = (key: string): string => {
 };
 
 // Helper function to format field values
-const formatFieldValue = (value: any): string => {
+const formatFieldValue = (value: unknown): string => {
   if (value === null || value === undefined) {
     return 'N/A';
   }
@@ -41,27 +41,26 @@ const TracksPage: React.FC = () => {
     setSelectedTrack(id);
   };
 
-  const getTrackData = async (id: number) => {
-    const res = await fetch(`/api/get_track?track_id={id}`.replace('{id}', id.toString()), {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    const data = await res.json();
-    setTrackData(data);
-    console.log(trackData);
-    return data;
-  }
+  useEffect(() => {
+    const getTrackData = async (id: number) => {
+      const res = await fetch(`/api/get_track?track_id={id}`.replace('{id}', id.toString()), {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      const data = await res.json();
+      setTrackData(data);
+      console.log(data);
+      return data;
+    };
 
-  // update every time submit is clicked as well FIX THIS
-  useEffect(() => { 
     if (typeof selectedTrack === 'number') {
       getTrackData(selectedTrack).then((data) => {
         console.log(data);
       });
     }
-    }, [selectedTrack]);
+  }, [selectedTrack]);
 
   useEffect(() => {
     setSelectedTrack(1);
@@ -75,7 +74,7 @@ const TracksPage: React.FC = () => {
           className={`flex-grow w-full h-full flex items-center justify-center rounded-3xl`}
           style={{ backgroundColor: '#110e12' }}
         >
-            <TrackEditModal isOpen={modalOpen} onClose={() => setIsModalOpen(false)} initTrackData={trackData as Record<string, any> | null} />
+            <TrackEditModal isOpen={modalOpen} onClose={() => setIsModalOpen(false)} initTrackData={trackData as Record<string, unknown> | null} />
             
             {/* <DataTable objects={trackData ? [trackData] : []} /> */}
             {selectedTrack === -1 ? (
@@ -86,7 +85,7 @@ const TracksPage: React.FC = () => {
             ) : selectedTrack ? (
               <div className="flex flex-col items-center">
                 <div className="flex items-center gap-4 mb-4">
-                  <p>{trackData?.track_name || 'N/A'}</p>
+                  <p>{typeof trackData?.track_name === 'string' ? trackData.track_name : 'N/A'}</p>
                   {selectedTrack !== -1 && (
                     <button className="btn" onClick={() => {
                       const modal = document.getElementById('edit_modal');

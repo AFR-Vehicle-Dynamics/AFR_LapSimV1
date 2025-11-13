@@ -5,7 +5,7 @@ import Navbar from '../components/Navbar/Navbar'
 import CSVImporterBox from '../components/CSVImporterBox/CSVImporterBox';
 import VehicleEditModal from '../components/VehicleEditModal/VehicleEditModal';
 
-type VehicleData = Record<string, any>;
+type VehicleData = Record<string, unknown>;
 
 // Helper function to format field names (snake_case to Title Case)
 const formatFieldName = (key: string): string => {
@@ -16,7 +16,7 @@ const formatFieldName = (key: string): string => {
 };
 
 // Helper function to format field values
-const formatFieldValue = (value: any): string => {
+const formatFieldValue = (value: unknown): string => {
   if (value === null || value === undefined) {
     return 'N/A';
   }
@@ -41,26 +41,26 @@ const VehiclesPage: React.FC = () => {
     setSelectedVehicle(vehicle_id);
   };
 
-  const getVehicleData = async (vehicle_id: number) => {
-    const res = await fetch(`/api/get_vehicle?vehicle_id={vehicle_id}`.replace('{vehicle_id}', vehicle_id.toString()), {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    const data = await res.json();
-    setVehicleData(data);
-    console.log(vehicleData);
-    return data;
-  }
-
   useEffect(() => {
+    const getVehicleData = async (vehicle_id: number) => {
+      const res = await fetch(`/api/get_vehicle?vehicle_id={vehicle_id}`.replace('{vehicle_id}', vehicle_id.toString()), {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      const data = await res.json();
+      setVehicleData(data);
+      console.log(data);
+      return data;
+    };
+
     if (typeof selectedVehicle === 'number') {
       getVehicleData(selectedVehicle).then((data) => {
         console.log(data);
       });
     }
-    }, [selectedVehicle]);
+  }, [selectedVehicle]);
 
   useEffect(() => {
     setSelectedVehicle(3);
@@ -74,7 +74,7 @@ const VehiclesPage: React.FC = () => {
           className={`flex-grow w-full h-full flex items-center justify-center rounded-3xl`}
           style={{ backgroundColor: '#110e12' }}
         >
-            <VehicleEditModal isOpen={modalOpen} onClose={() => setIsModalOpen(false)} initVehicleData={vehicleData as Record<string, any> | null} />
+            <VehicleEditModal isOpen={modalOpen} onClose={() => setIsModalOpen(false)} initVehicleData={vehicleData as Record<string, unknown> | null} />
 
             {selectedVehicle === -1 ? (
               <div className="flex flex-col items-center">
@@ -84,7 +84,7 @@ const VehiclesPage: React.FC = () => {
             ) : selectedVehicle ? (
               <div className="flex flex-col items-center">
                 <div className="flex items-center gap-4 mb-4">
-                  <p>{vehicleData?.vehicle_name || 'N/A'}</p>
+                  <p>{typeof vehicleData?.vehicle_name === 'string' ? vehicleData.vehicle_name : 'N/A'}</p>
                   {selectedVehicle !== -1 && (
                     <button className="btn" onClick={() => {
                       const modal = document.getElementById('edit_modal');

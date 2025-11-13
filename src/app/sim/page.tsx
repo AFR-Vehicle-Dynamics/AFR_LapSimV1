@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import SimControlPanel from '../components/SimComponents/SimControlPanel/SimControlPanel'
 import Navbar from '../components/Navbar/Navbar'
 import GraphDisplay from '../components/SimComponents/GraphDisplay/GraphDisplay';
@@ -7,10 +7,9 @@ import SimDataDisplayPanel from '../components/SimComponents/SimDataDisplayPanel
 
 
 const SimPage = () => {
-  const [selectedVehicle, setSelectedVehicle] = useState<string | number | null>(null);
-  const [graphData, setData] = useState<JSON | null>(null);
   const handleVehicleSelect = (vehicle_id: number) => {
-    setSelectedVehicle(vehicle_id);
+    // Handle vehicle selection if needed
+    console.log('Selected vehicle:', vehicle_id);
   };
 
   return (

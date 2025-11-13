@@ -13,7 +13,7 @@ interface VehicleData {
 interface VehicleEditModalProps {
     isOpen: boolean;
     onClose: () => void;
-    initVehicleData: { id: number; vehicle_name: string; vehicle_type: string; total_mass: number } | null;
+    initVehicleData: Record<string, unknown> | null;
 }
 
 const VehicleEditModal: React.FC<VehicleEditModalProps> = ({ isOpen, onClose, initVehicleData }) => {

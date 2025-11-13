@@ -13,7 +13,7 @@ interface TracksData {
 interface TrackEditModalProps {
     isOpen: boolean;
     onClose: () => void;
-    initTrackData: { id: number; track_name: string; country: string; city: string } | null;
+    initTrackData: Record<string, unknown> | null;
   }
 
 const TrackEditModal: React.FC<TrackEditModalProps> = ({ isOpen, onClose, initTrackData }) => {
